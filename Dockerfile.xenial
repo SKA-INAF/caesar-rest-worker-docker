@@ -1,0 +1,24 @@
+FROM sriggi/caesar-rest:latest
+
+MAINTAINER Simone Riggi "simone.riggi@gmail.com"
+
+######################################
+##   DEFINE CUSTOMIZABLE ARGS/ENVS
+######################################
+ARG APP_NAME_ARG="caesar_rest"
+ENV APP_NAME $APP_NAME_ARG
+
+ARG NPROC_ARG=2
+ENV NPROC $NPROC_ARG
+
+RUN echo "BROKER_URL=$BROKER_URL"
+RUN echo "RESULT_BACKEND_URL=$RESULT_BACKEND_URL"
+	
+######################################
+##     RUN
+######################################
+
+CMD ["sh", "-c", "/usr/local/bin/celery --broker=$BROKER_URL --result-backend=$RESULT_BACKEND_URL --app=$APP_NAME worker --loglevel=INFO --concurrency=$NPROC"]
+
+
+
