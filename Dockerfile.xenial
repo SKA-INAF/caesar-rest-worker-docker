@@ -13,12 +13,17 @@ ENV NPROC $NPROC_ARG
 
 RUN echo "BROKER_URL=$BROKER_URL"
 RUN echo "RESULT_BACKEND_URL=$RESULT_BACKEND_URL"
-	
+
 ######################################
 ##     RUN
 ######################################
+# - Copy run script
+COPY run_celery.sh /opt/caesar-rest/bin/run_celery.sh
+RUN chmod +x /opt/caesar-rest/bin/run_celery.sh
 
-CMD ["sh", "-c", "/usr/local/bin/celery --broker=$BROKER_URL --result-backend=$RESULT_BACKEND_URL --app=$APP_NAME worker --loglevel=INFO --concurrency=$NPROC"]
+# - Run 
+#CMD ["sh", "-c", "/usr/local/bin/celery --broker=$BROKER_URL --result-backend=$RESULT_BACKEND_URL --app=$APP_NAME worker --loglevel=INFO --concurrency=$NPROC"]
+CMD ["sh", "-c", "/opt/caesar-rest/bin/run_celery.sh --runuser=$USER --broker=$BROKER_URL --result-backend=$RESULT_BACKEND_URL --app=$APP_NAME --nproc=$NPROC"]
 
 
 
