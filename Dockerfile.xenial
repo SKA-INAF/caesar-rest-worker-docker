@@ -11,8 +11,13 @@ ENV APP_NAME $APP_NAME_ARG
 ARG NPROC_ARG=2
 ENV NPROC $NPROC_ARG
 
+ARG QUEUE_ARG=2
+ENV QUEUE $QUEUE_ARG
+
+
 RUN echo "BROKER_URL=$BROKER_URL"
 RUN echo "RESULT_BACKEND_URL=$RESULT_BACKEND_URL"
+RUN echo "QUEUE=$QUEUE"
 
 ######################################
 ##     INSTALL ADDONS
@@ -28,7 +33,7 @@ RUN chmod +x /opt/caesar-rest/bin/run_celery.sh
 
 # - Run 
 #CMD ["sh", "-c", "/usr/local/bin/celery --broker=$BROKER_URL --result-backend=$RESULT_BACKEND_URL --app=$APP_NAME worker --loglevel=INFO --concurrency=$NPROC"]
-CMD ["sh", "-c", "/opt/caesar-rest/bin/run_celery.sh --runuser=$USER --broker=$BROKER_URL --result-backend=$RESULT_BACKEND_URL --app=$APP_NAME --nproc=$NPROC"]
+CMD ["sh", "-c", "/opt/caesar-rest/bin/run_celery.sh --runuser=$USER --broker=$BROKER_URL --result-backend=$RESULT_BACKEND_URL --app=$APP_NAME --nproc=$NPROC --queue=$QUEUE"]
 
 
 
