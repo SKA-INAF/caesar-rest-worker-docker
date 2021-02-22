@@ -11,18 +11,12 @@ ENV APP_NAME $APP_NAME_ARG
 ARG NPROC_ARG=2
 ENV NPROC $NPROC_ARG
 
-ARG QUEUE_ARG=2
+ARG QUEUE_ARG=celery
 ENV QUEUE $QUEUE_ARG
-
 
 RUN echo "BROKER_URL=$BROKER_URL"
 RUN echo "RESULT_BACKEND_URL=$RESULT_BACKEND_URL"
 RUN echo "QUEUE=$QUEUE"
-
-######################################
-##     INSTALL ADDONS
-######################################
-RUN apt-get update && apt-get install -y openssh-client openssh-server
 
 ######################################
 ##     RUN
