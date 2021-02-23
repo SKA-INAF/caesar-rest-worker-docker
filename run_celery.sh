@@ -45,13 +45,23 @@ do
 	esac
 done
 
+###############################
+##    SOURCE ENVIRONMENT VARS
+###############################
+echo "Sourcing env vars ..."
+source /etc/profile.d/setupSoft.sh
+echo "PATH=$PATH"
+echo "PYTHONPATH=$PYTHONPATH"
 
 ###############################
 ##    RUN CELERY
 ###############################
 #CMD="/usr/local/bin/celery --broker=$BROKER_URL --result-backend=$RESULT_BACKEND_URL --app=$APP_NAME worker --loglevel=INFO --concurrency=$NPROC"
 #CMD="/usr/local/bin/celery multi start caesar_worker --uid=$RUNUSER --gid=$RUNUSER --app=$APP_NAME --broker=$BROKER_URL --result-backend=$RESULT_BACKEND_URL --loglevel=INFO --concurrency=$NPROC --logfile=$LOG_FILE --pidfile=$PID_FILE"
-CMD="runuser -l $RUNUSER -g $RUNUSER -c'""/usr/local/bin/celery --broker=$BROKER_URL --result-backend=$RESULT_BACKEND_URL --app=$APP_NAME worker --loglevel=INFO --concurrency=$NPROC -Q $QUEUE""'"
+
+###CMD="runuser -l $RUNUSER -g $RUNUSER -c'""/usr/local/bin/celery --broker=$BROKER_URL --result-backend=$RESULT_BACKEND_URL --app=$APP_NAME worker --loglevel=INFO --concurrency=$NPROC -Q $QUEUE""'"
+
+CMD="runuser -l $RUNUSER -g $RUNUSER -c'""source /etc/profile.d/setupSoft.sh && echo $PYTHONPATH && /usr/local/bin/celery --broker=$BROKER_URL --result-backend=$RESULT_BACKEND_URL --app=$APP_NAME worker --loglevel=INFO --concurrency=$NPROC -Q $QUEUE""'"
 
 
 echo "INFO: Running celery (cmd=$CMD) ..."

@@ -1,0 +1,64 @@
+FROM sriggi/caesar-rest:light as base
+MAINTAINER Simone Riggi "simone.riggi@gmail.com"
+
+######################################
+##   DEFINE CUSTOMIZABLE ARGS/ENVS
+######################################
+ARG APP_NAME_ARG="caesar_rest"
+ENV APP_NAME $APP_NAME_ARG
+
+ARG NPROC_ARG=2
+ENV NPROC $NPROC_ARG
+
+ARG QUEUE_ARG=celery
+ENV QUEUE $QUEUE_ARG
+
+RUN echo "BROKER_URL=$BROKER_URL"
+RUN echo "RESULT_BACKEND_URL=$RESULT_BACKEND_URL"
+RUN echo "QUEUE=$QUEUE"
+RUN echo "PYTHONPATH=$PYTHONPATH"
+ENV PYTHONPATH_BASE ${PYTHONPATH}
+
+######################################
+##   ADD CAESAR 
+######################################
+FROM sriggi/caesar:light as caesar
+
+FROM base
+COPY --from=caesar /opt/Software /opt/Software
+COPY --from=caesar /usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.58.0 /usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.58.0
+COPY --from=caesar /usr/lib/x86_64-linux-gnu/libboost_regex.so.1.58.0 /usr/lib/x86_64-linux-gnu/libboost_regex.so.1.58.0
+COPY --from=caesar /usr/lib/x86_64-linux-gnu/libboost_system.so.1.58.0 /usr/lib/x86_64-linux-gnu/libboost_system.so.1.58.0
+COPY --from=caesar /usr/lib/x86_64-linux-gnu/liblog4cxx.so.10 /usr/lib/x86_64-linux-gnu/liblog4cxx.so.10
+COPY --from=caesar /usr/lib/x86_64-linux-gnu/libcfitsio.so.2 /usr/lib/x86_64-linux-gnu/libcfitsio.so.2
+COPY --from=caesar /usr/lib/x86_64-linux-gnu/libprotobuf.so.9 /usr/lib/x86_64-linux-gnu/libprotobuf.so.9
+COPY --from=caesar /usr/lib/x86_64-linux-gnu/libapr-1.so.0 /usr/lib/x86_64-linux-gnu/libapr-1.so.0
+COPY --from=caesar /usr/lib/x86_64-linux-gnu/libaprutil-1.so.0 /usr/lib/x86_64-linux-gnu/libaprutil-1.so.0
+COPY --from=caesar /usr/lib/x86_64-linux-gnu/libfreetype.so.6 /usr/lib/x86_64-linux-gnu/libfreetype.so.6
+COPY --from=caesar /usr/lib/x86_64-linux-gnu/libgsl.so.19 /usr/lib/x86_64-linux-gnu/libgsl.so.19
+COPY --from=caesar /usr/lib/x86_64-linux-gnu/libgslcblas.so.0 /usr/lib/x86_64-linux-gnu/libgslcblas.so.0
+COPY --from=caesar /usr/lib/x86_64-linux-gnu/libjpeg.so.8 /usr/lib/x86_64-linux-gnu/libjpeg.so.8
+COPY --from=caesar /usr/lib/x86_64-linux-gnu/libpng12.so.0 /usr/lib/x86_64-linux-gnu/libpng12.so.0
+COPY --from=caesar /usr/lib/x86_64-linux-gnu/libnuma.so.1 /usr/lib/x86_64-linux-gnu/libnuma.so.1
+COPY --from=caesar /usr/lib/x86_64-linux-gnu/libpciaccess.so.0 /usr/lib/x86_64-linux-gnu/libpciaccess.so.0
+
+COPY --from=caesar /etc/profile.d/setupSoft.sh /etc/profile.d/setupSoft.sh
+
+RUN echo "export PYTHONPATH=${PYTHONPATH_BASE}:$PYTHONPATH" >> /etc/profile.d/setupSoft.sh
+
+RUN chmod +x /etc/profile.d/setupSoft.sh
+
+RUN echo "PYTHONPATH_BASE=$PYTHONPATH"
+
+######################################
+##     RUN
+######################################
+# - Copy run script
+COPY run_celery.sh /opt/caesar-rest/bin/run_celery.sh
+RUN chmod +x /opt/caesar-rest/bin/run_celery.sh
+
+# - Run 
+CMD ["sh", "-c", "/opt/caesar-rest/bin/run_celery.sh --runuser=$USER --broker=$BROKER_URL --result-backend=$RESULT_BACKEND_URL --app=$APP_NAME --nproc=$NPROC --queue=$QUEUE"]
+
+
+
