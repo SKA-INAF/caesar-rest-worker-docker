@@ -22,7 +22,9 @@ ENV PYTHONPATH_BASE ${PYTHONPATH}
 ######################################
 ##   ADD CAESAR 
 ######################################
-FROM sriggi/caesar:light as caesar
+##FROM sriggi/caesar:light as caesar
+FROM sriggi/caesar:latest as caesar
+
 
 FROM base
 COPY --from=caesar /opt/Software /opt/Software
@@ -58,7 +60,7 @@ COPY run_celery.sh /opt/caesar-rest/bin/run_celery.sh
 RUN chmod +x /opt/caesar-rest/bin/run_celery.sh
 
 # - Run 
-CMD ["sh", "-c", "/opt/caesar-rest/bin/run_celery.sh --runuser=$USER --broker=$BROKER_URL --result-backend=$RESULT_BACKEND_URL --app=$APP_NAME --nproc=$NPROC --queue=$QUEUE"]
+CMD ["sh", "-c", "/opt/caesar-rest/bin/run_celery.sh --runuser=$USER --broker=$BROKER_URL --result-backend=$RESULT_BACKEND_URL --app=$APP_NAME --nproc=$NPROC --queue=$QUEUE --mount-rclone-volume=$MOUNT_RCLONE_VOLUME --mount-volume-path=$MOUNT_VOLUME_PATH --rclone-remote-storage=$RCLONE_REMOTE_STORAGE --rclone-remote-storage-path=$RCLONE_REMOTE_STORAGE_PATH --rclone-mount-wait=$RCLONE_MOUNT_WAIT_TIME"]
 
 
 
