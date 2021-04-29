@@ -1,4 +1,4 @@
-FROM sriggi/caesar-rest:light as base
+FROM sriggi/caesar-rest:latest as base
 MAINTAINER Simone Riggi "simone.riggi@gmail.com"
 
 ######################################
@@ -22,7 +22,6 @@ ENV PYTHONPATH_BASE ${PYTHONPATH}
 ######################################
 ##   ADD CAESAR 
 ######################################
-##FROM sriggi/caesar:light as caesar
 FROM sriggi/caesar:latest as caesar
 
 
